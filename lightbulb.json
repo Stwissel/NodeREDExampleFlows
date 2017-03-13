@@ -1,0 +1,710 @@
+[
+    {
+        "id": "1abfffc1.49fdc",
+        "type": "subflow",
+        "name": "Static HTML for Lightbulb",
+        "in": [],
+        "out": [
+            {
+                "x": 640,
+                "y": 100,
+                "wires": [
+                    {
+                        "id": "3e14d276.35e4de",
+                        "port": 0
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "865efbaa.acffc8",
+        "type": "comment",
+        "z": "1abfffc1.49fdc",
+        "name": "Static files - for the bulbs example",
+        "info": "Serve HTML and JS for the bulb use case.\nAngular and font-awesome are loaded from CDN)",
+        "x": 159,
+        "y": 32,
+        "wires": []
+    },
+    {
+        "id": "f0a3ea60.f437e",
+        "type": "http in",
+        "z": "1abfffc1.49fdc",
+        "name": "/bulb main HTML",
+        "url": "/bulb",
+        "method": "get",
+        "swaggerDoc": "",
+        "x": 102,
+        "y": 85,
+        "wires": [
+            [
+                "3e14d276.35e4de"
+            ]
+        ]
+    },
+    {
+        "id": "afd54500.4e5b68",
+        "type": "http response",
+        "z": "1abfffc1.49fdc",
+        "name": "",
+        "x": 592,
+        "y": 183,
+        "wires": []
+    },
+    {
+        "id": "3e14d276.35e4de",
+        "type": "template",
+        "z": "1abfffc1.49fdc",
+        "name": "index.html",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "html",
+        "syntax": "mustache",
+        "template": "<!DOCTYPE html>\n<head>\n    <meta charset=\"utf-8\">\n    <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">\n    <title>The Socket bulb</title>\n    <meta name=\"description\" content=\"\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n    <link rel=\"stylesheet\" href=\"//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css\">\n    <link rel=\"stylesheet\" href=\"/bulb/app.css\">\n</head>\n<body ng-app=\"myApp\" ng-controller=\"BulbController\">\n<div class=\"container\">\n<!--[if lt IE 9]>\n<p class=\"browsehappy\">You are using an <strong>outdated</strong> browser. Please <a href=\"http://browsehappy.com/\">upgrade your browser</a> to improve your experience.</p>\n<![endif]-->\n<h1>Angular Lightbulb App</h1>\n\n<div ng-view>Let there be light</div>\n    <ul class=\"menu\">\n        <li><a href=\"#/bulbunknown\">unknown</a></li>\n        <li><button ng-click=\"bulbOn()\">ON</button></li>\n        <li><button ng-click=\"bulbOff()\">OFF</button></li>\n    </ul>\n</div>\n<script src=\"//cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.3/angular.js\"></script>\n<script src=\"//cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.3/angular-route.js\"></script>\n<script src=\"/bulb/socket.js\"></script>\n<script src=\"/bulb/app.js\"></script>\n</body>\n</html>",
+        "x": 328,
+        "y": 85,
+        "wires": [
+            [
+                "afd54500.4e5b68"
+            ]
+        ]
+    },
+    {
+        "id": "38b6e24a.7774c6",
+        "type": "http in",
+        "z": "1abfffc1.49fdc",
+        "name": "app.css",
+        "url": "/bulb/app.css",
+        "method": "get",
+        "swaggerDoc": "",
+        "x": 67,
+        "y": 338,
+        "wires": [
+            [
+                "f87f5bbc.001ac"
+            ]
+        ]
+    },
+    {
+        "id": "b25fe833.d78fd8",
+        "type": "http in",
+        "z": "1abfffc1.49fdc",
+        "name": "app.js",
+        "url": "/bulb/app.js",
+        "method": "get",
+        "swaggerDoc": "",
+        "x": 73,
+        "y": 262,
+        "wires": [
+            [
+                "845bb294.ca9918"
+            ]
+        ]
+    },
+    {
+        "id": "2acfc2e5.d4b74e",
+        "type": "template",
+        "z": "1abfffc1.49fdc",
+        "name": "app.css",
+        "field": "payload",
+        "format": "text",
+        "template": "/* app css stylesheet */\n.container {\n  margin : 25%;\n  width : 50%;\n  text-align: center;\n}\n\n.menu {\n  list-style: none;\n  border-top: 0.1em solid black;\n  margin-top: 2em;\n  padding: 0 0 0.5em;\n}\n\n.menu:before {\n  content: \"[\";\n}\n\n.menu:after {\n  content: \"]\";\n}\n\n.menu > li {\n  display: inline;\n}\n\n.menu > li:before {\n  content: \"|\";\n  padding-right: 0.3em;\n}\n\n.menu > li:nth-child(1):before {\n  content: \"\";\n  padding: 0;\n}\n",
+        "x": 390,
+        "y": 339,
+        "wires": [
+            [
+                "afd54500.4e5b68"
+            ]
+        ]
+    },
+    {
+        "id": "845bb294.ca9918",
+        "type": "template",
+        "z": "1abfffc1.49fdc",
+        "name": "app.js",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "text",
+        "syntax": "mustache",
+        "template": "'use strict';\n\nvar websocketEndpoint = 'wss://notessensei.mybluemix.net/ws/bulb';\n\nconsole.log('Application loading ...');\n// Declare app level module which depends on views, and components\nvar myApp = angular.module('myApp', ['ngWebsocket', 'ngRoute']);\n\nmyApp.controller('BulbController', function($scope, $http) {\n    $scope.bulbOn = function() {\n        $http.get(\"/bulbon\")\n            .then(function(response) {\n                console.log(response.data);\n            });\n    };\n\n    $scope.bulbOff = function() {\n        $http.get(\"/bulboff\")\n            .then(function(response) {\n                console.log(response.data);\n            });\n    };\n    console.log(\"Controller loaded\");\n});\n\n\nmyApp.config(['$routeProvider', function($routeProvider) {\n    console.log('Routes loading... ');\n    $routeProvider.when('/bulbon', {\n        templateUrl: '/bulb/bulbs/bulb-on.html'\n    }).when('/bulboff', {\n        templateUrl: '/bulb/bulbs/bulb-off.html'\n    }).when('/bulbunknown', {\n        templateUrl: '/bulb/bulbs/bulb-unknown.html'\n    }).otherwise({ redirectTo: '/bulbunknown' });\n}]);\n\nmyApp.run(function($websocket, $location) {\n    console.log('run');\n    var ws = $websocket.$new({\n        url: websocketEndpoint,\n        reconnect: true\n    }); // instance of ngWebsocket, handled by $websocket service\n\n    ws.$on('$open', function() {\n        console.log('Websocket connection open');\n    });\n\n    ws.$on('$message', function(data) {\n        console.log('data arrived');\n        console.log(data);\n        var newlocation = '#/bulbunknown';\n        if (data.bulb === 1) {\n            newlocation = '#/bulbon';\n        } else if (data.bulb === 0) {\n            newlocation = '#/bulboff';\n        }\n\n        window.location = newlocation;\n    });\n\n    ws.$on('$close', function() {\n        console.log('Websocket connection closed');\n    });\n});\n\nconsole.log('Done');\n",
+        "x": 204,
+        "y": 263,
+        "wires": [
+            [
+                "ead54241.8c5ea"
+            ]
+        ]
+    },
+    {
+        "id": "3d9b5558.e5946a",
+        "type": "http in",
+        "z": "1abfffc1.49fdc",
+        "name": "bulbs/bulb-unknown.html",
+        "url": "/bulb/bulbs/bulb-unknown.html",
+        "method": "get",
+        "swaggerDoc": "",
+        "x": 129,
+        "y": 124,
+        "wires": [
+            [
+                "2721cf06.0e4868"
+            ]
+        ]
+    },
+    {
+        "id": "45909ffe.b7e58",
+        "type": "http in",
+        "z": "1abfffc1.49fdc",
+        "name": "bulbs/bulb-off.html",
+        "url": "/bulb/bulbs/bulb-off.html",
+        "method": "get",
+        "swaggerDoc": "",
+        "x": 108,
+        "y": 162,
+        "wires": [
+            [
+                "a8757132.3a6278"
+            ]
+        ]
+    },
+    {
+        "id": "5d03a606.d4c31",
+        "type": "http in",
+        "z": "1abfffc1.49fdc",
+        "name": "bulbs/bulb-on.html",
+        "url": "/bulb/bulbs/bulb-on.html",
+        "method": "get",
+        "swaggerDoc": "",
+        "x": 108,
+        "y": 200,
+        "wires": [
+            [
+                "dc51b3da.8d1248"
+            ]
+        ]
+    },
+    {
+        "id": "2721cf06.0e4868",
+        "type": "template",
+        "z": "1abfffc1.49fdc",
+        "name": "bulbs-unknown.html",
+        "field": "payload",
+        "format": "html",
+        "template": "<p>The light <br/>\n    <span class=\"fa-stack fa-5x\">\n        <i class=\"fa fa-lightbulb-o  fa-stack-2x\" style=\"color :  #000044\"></i>\n        <i class=\"fa fa-question-circle fa-stack-1x\" style=\"color :  red\"></i>\n    </span>\n</p>",
+        "x": 358,
+        "y": 123,
+        "wires": [
+            [
+                "afd54500.4e5b68"
+            ]
+        ]
+    },
+    {
+        "id": "a8757132.3a6278",
+        "type": "template",
+        "z": "1abfffc1.49fdc",
+        "name": "bulb-off.html",
+        "field": "payload",
+        "format": "handlebars",
+        "template": "<p>The light <br/>\n    <span class=\"fa-stack fa-5x\">\n      <i class=\"fa fa-ban fa-stack-2x\" style=\"color: red;\"></i>\n        <i class=\"fa fa-lightbulb-o  fa-stack-2x\"> </i>\n    </span>\n</p>",
+        "x": 340,
+        "y": 162,
+        "wires": [
+            [
+                "afd54500.4e5b68"
+            ]
+        ]
+    },
+    {
+        "id": "dc51b3da.8d1248",
+        "type": "template",
+        "z": "1abfffc1.49fdc",
+        "name": "bulbs-on.html",
+        "field": "payload",
+        "format": "handlebars",
+        "template": "<p>The light <br/>\n    <span class=\"fa-stack fa-5x\">\n        <i class=\"fa fa-cog fa-stack-2x\" style=\"color :  yellow\"></i>\n        <i class=\"fa fa-lightbulb-o  fa-stack-2x\" style=\"color :  #FFAB00\"></i>\n    </span>\n</p>\n",
+        "x": 344,
+        "y": 199,
+        "wires": [
+            [
+                "afd54500.4e5b68"
+            ]
+        ]
+    },
+    {
+        "id": "ead54241.8c5ea",
+        "type": "function",
+        "z": "1abfffc1.49fdc",
+        "name": "set content to js",
+        "func": "msg.headers = {'Content-Type': 'text/javascript'};\nreturn msg;\n\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 374,
+        "y": 282,
+        "wires": [
+            [
+                "afd54500.4e5b68"
+            ]
+        ]
+    },
+    {
+        "id": "f87f5bbc.001ac",
+        "type": "function",
+        "z": "1abfffc1.49fdc",
+        "name": "set content to css",
+        "func": "msg.headers = {'Content-Type': 'text/css'};\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 222,
+        "y": 339,
+        "wires": [
+            [
+                "2acfc2e5.d4b74e"
+            ]
+        ]
+    },
+    {
+        "id": "b8f63439.04c13",
+        "type": "http in",
+        "z": "1abfffc1.49fdc",
+        "name": "socket.js",
+        "url": "/bulb/socket.js",
+        "method": "get",
+        "swaggerDoc": "",
+        "x": 72,
+        "y": 300,
+        "wires": [
+            [
+                "1b3ec693.2d1431"
+            ]
+        ]
+    },
+    {
+        "id": "1b3ec693.2d1431",
+        "type": "template",
+        "z": "1abfffc1.49fdc",
+        "name": "socket.js",
+        "field": "payload",
+        "format": "text",
+        "template": "'use strict';\n\n(function () {\n    /**\n     * @ngdoc provider\n     * @name $websocketProvider\n     * @module ngWebsocket\n     * @description\n     * HTML5 WebSocket provider for AngularJS\n     */\n    function $websocketProvider () {\n        var wsp = this;\n\n        wsp.$$config = {\n            lazy: false,\n            reconnect: true,\n            reconnectInterval: 2000,\n            mock: false,\n            enqueue: false,\n            protocols: null\n        };\n\n        wsp.$setup = function (cfg) {\n            cfg = cfg || {};\n            wsp.$$config = angular.extend({}, wsp.$$config, cfg);\n\n            return wsp;\n        };\n\n        wsp.$get = ['$http', function ($http) {\n            return new $websocketService(wsp.$$config, $http);\n        }];\n    }\n\n    /**\n     * @ngdoc service\n     * @name $websocketService\n     * @module ngWebsocketService\n     * @description\n     * HTML5 Websocket service for AngularJS\n     */\n    function $websocketService (cfg, $http) {\n        var wss = this;\n\n        wss.$$websocketList = {};\n        wss.$$config = cfg || {};\n\n        wss.$get = function (url) {\n            return wss.$$websocketList[url];\n        };\n\n        wss.$new = function (cfg) {\n            cfg = cfg || {};\n\n            // Url or url + protocols initialization\n            if (typeof cfg === 'string') {\n                cfg = {url: cfg};\n\n                // url + protocols\n                if (arguments.length > 1) {\n                    if (typeof arguments[1] === 'string' && arguments[1].length > 0) cfg.protocols = [arguments[1]];\n                    else if (typeof arguments[1] === 'object' && arguments[1].length > 0) cfg.protocols = arguments[1];\n                }\n            }\n\n            // If the websocket already exists, return that instance\n            var ws = wss.$get(cfg.url);\n            if (typeof ws === 'undefined') {\n                var wsCfg = angular.extend({}, wss.$$config, cfg);\n\n                ws = new $websocket(wsCfg, $http);\n                wss.$$websocketList[wsCfg.url] = ws;\n            }\n\n            return ws;\n        };\n    }\n\n    /**\n     * @ngdoc class\n     * @name $websocket\n     * @module ngWebsocket\n     * @description\n     * HTML5 Websocket wrapper class for AngularJS\n     */\n    function $websocket (cfg, $http) {\n        var me = this;\n\n        if (typeof cfg === 'undefined' || (typeof cfg === 'object' && typeof cfg.url === 'undefined')) throw new Error('An url must be specified for WebSocket');\n\n        me.$$eventMap = {};\n        me.$$ws = undefined;\n        me.$$reconnectTask = undefined;\n        me.$$reconnectCopy = true;\n        me.$$queue = [];\n        me.$$config = {\n            url: undefined,\n            lazy: false,\n            reconnect: true,\n            reconnectInterval: 2000,\n            enqueue: false,\n            mock: false,\n            protocols: null\n        };\n\n        me.$$fireEvent = function () {\n            var args = [];\n\n            Array.prototype.push.apply(args, arguments);\n\n            var event = args.shift(),\n                handlers = me.$$eventMap[event];\n\n            if (typeof handlers !== 'undefined') {\n                for (var i = 0; i < handlers.length; i++) {\n                    if (typeof handlers[i] === 'function') handlers[i].apply(me, args);\n                }\n            }\n        };\n\n        me.$$init = function (cfg) {\n            me.$$ws = cfg.mock ? new $$mockWebsocket(cfg.mock, $http) : new WebSocket(cfg.url, cfg.protocols);\n\n            me.$$ws.onmessage = function (message) {\n                try {\n                    var decoded = JSON.parse(message.data);\n                    me.$$fireEvent(decoded.event, decoded.data);\n                    me.$$fireEvent('$message', decoded);\n                }\n                catch (err) {\n                    me.$$fireEvent('$message', message.data);\n                }\n            };\n\n            me.$$ws.onerror = function (error) {\n                me.$$fireEvent('$error', error);\n            };\n\n            me.$$ws.onopen = function () {\n                // Clear the reconnect task if exists\n                if (me.$$reconnectTask) {\n                    clearInterval(me.$$reconnectTask);\n                    delete me.$$reconnectTask;\n                }\n\n                // Flush the message queue\n                if (me.$$config.enqueue && me.$$queue.length > 0) {\n                    while (me.$$queue.length > 0) {\n                        if (me.$ready()) me.$$send(me.$$queue.shift());\n                        else break;\n                    }\n                }\n\n                me.$$fireEvent('$open');\n            };\n\n            me.$$ws.onclose = function () {\n                // Activate the reconnect task\n                if (me.$$config.reconnect) {\n                    me.$$reconnectTask = setInterval(function () {\n                        if (me.$status() === me.$CLOSED) me.$open();\n                    }, me.$$config.reconnectInterval);\n                }\n\n                me.$$fireEvent('$close');\n            };\n\n            return me;\n        };\n\n        me.$CONNECTING = 0;\n        me.$OPEN = 1;\n        me.$CLOSING = 2;\n        me.$CLOSED = 3;\n\n        // TODO: it doesn't refresh the view (maybe $apply on something?)\n        /*me.$bind = function (event, scope, model) {\n         me.$on(event, function (message) {\n         model = message;\n         scope.$apply();\n         });\n         };*/\n\n        me.$on = function () {\n            var handlers = [];\n\n            Array.prototype.push.apply(handlers, arguments);\n\n            var event = handlers.shift();\n            if (typeof event !== 'string' || handlers.length === 0) throw new Error('$on accept two parameters at least: a String and a Function or an array of Functions');\n\n            me.$$eventMap[event] = me.$$eventMap[event] || [];\n            for (var i = 0; i < handlers.length; i++) {\n                me.$$eventMap[event].push(handlers[i]);\n            }\n\n            return me;\n        };\n\n        me.$un = function (event) {\n            if (typeof event !== 'string') throw new Error('$un needs a String representing an event.');\n\n            if (typeof me.$$eventMap[event] !== 'undefined') delete me.$$eventMap[event];\n\n            return me;\n        };\n\n        me.$$send = function (message) {\n            if (me.$ready()) me.$$ws.send(JSON.stringify(message));\n            else if (me.$$config.enqueue) me.$$queue.push(message);\n        };\n\n        me.$emit = function (event, data) {\n            if (typeof event !== 'string') throw new Error('$emit needs two parameter: a String and a Object or a String');\n\n            var message = {\n                event: event,\n                data: data\n            };\n\n            me.$$send(message);\n\n            return me;\n        };\n\n        me.$open = function () {\n            me.$$config.reconnect = me.$$reconnectCopy;\n\n            if (me.$status() !== me.$OPEN) me.$$init(me.$$config);\n            return me;\n        };\n\n        me.$close = function () {\n            if (me.$status() !== me.$CLOSED) me.$$ws.close();\n\n            if (me.$$reconnectTask) {\n                clearInterval(me.$$reconnectTask);\n                delete me.$$reconnectTask;\n            }\n\n            me.$$config.reconnect = false;\n\n            return me;\n        };\n\n        me.$status = function () {\n            if (typeof me.$$ws === 'undefined') return me.$CLOSED;\n            else return me.$$ws.readyState;\n        };\n\n        me.$ready = function () {\n            return me.$status() === me.$OPEN;\n        };\n\n        me.$mockup = function () {\n            return me.$$config.mock;\n        };\n\n        // setup\n        me.$$config = angular.extend({}, me.$$config, cfg);\n        me.$$reconnectCopy = me.$$config.reconnect;\n\n        if (!me.$$config.lazy) me.$$init(me.$$config);\n\n        return me;\n    }\n\n    function $$mockWebsocket (cfg, $http) {\n        cfg = cfg || {};\n\n        var me = this,\n            openTimeout = cfg.openTimeout || 500,\n            closeTimeout = cfg.closeTimeout || 1000,\n            messageInterval = cfg.messageInterval || 2000,\n            fixtures = cfg.fixtures || {},\n            messageQueue = [];\n\n        me.CONNECTING = 0;\n        me.OPEN = 1;\n        me.CLOSING = 2;\n        me.CLOSED = 3;\n\n        me.readyState = me.CONNECTING;\n\n        me.send = function (message) {\n            if (me.readyState === me.OPEN) {\n                messageQueue.push(message);\n                return me;\n            }\n            else throw new Error('WebSocket is already in CLOSING or CLOSED state.');\n        };\n\n        me.close = function () {\n            if (me.readyState === me.OPEN) {\n                me.readyState = me.CLOSING;\n\n                setTimeout(function () {\n                    me.readyState = me.CLOSED;\n\n                    me.onclose();\n                }, closeTimeout);\n            }\n\n            return me;\n        };\n\n        me.onmessage = function () {};\n        me.onerror = function () {};\n        me.onopen = function () {};\n        me.onclose = function () {};\n\n        setInterval(function () {\n            if (messageQueue.length > 0) {\n                var message = messageQueue.shift(),\n                    msgObj = JSON.parse(message);\n\n                switch (msgObj.event) {\n                    case '$close':\n                        me.close();\n                        break;\n                    default:\n                        // Check for a custom response\n                        if (typeof fixtures[msgObj.event] !== 'undefined') {\n                            msgObj.data = fixtures[msgObj.event].data || msgObj.data;\n                            msgObj.event = fixtures[msgObj.event].event || msgObj.event;\n                        }\n\n                        message = JSON.stringify(msgObj);\n\n                        me.onmessage({\n                            data: message\n                        });\n                }\n            }\n        }, messageInterval);\n\n        var start = function (fixs) {\n            fixs = fixs || {};\n            fixs = fixs instanceof Error ? {} : fixs;\n\n            fixtures = fixs;\n\n            setTimeout(function () {\n                me.readyState = me.OPEN;\n                me.onopen();\n            }, openTimeout);\n        };\n\n        // Get fixtures from a server or a file if it's a string\n        if (typeof fixtures === 'string') {\n            $http.get(fixtures)\n                .success(start)\n                .error(start);\n        }\n        else start(fixtures);\n\n        return me;\n    }\n\n    /**\n     * @ngdoc module\n     * @name $websocket\n     * @module ngWebsocket\n     * @description\n     * HTML5 WebSocket module for AngularJS\n     */\n    angular\n        .module('ngWebsocket', [])\n        .provider('$websocket', $websocketProvider);\n})();",
+        "x": 211,
+        "y": 302,
+        "wires": [
+            [
+                "ead54241.8c5ea"
+            ]
+        ]
+    },
+    {
+        "id": "c89ae3d9.37652",
+        "type": "tab",
+        "label": "Lightbulb example"
+    },
+    {
+        "id": "5670c182.a98f4",
+        "type": "inject",
+        "z": "c89ae3d9.37652",
+        "name": "Bulb on",
+        "topic": "",
+        "payload": "{ \"hello\" : \"world\", \"bulb\" : 1}",
+        "payloadType": "str",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "x": 120,
+        "y": 76,
+        "wires": [
+            [
+                "fb50fed9.04af"
+            ]
+        ]
+    },
+    {
+        "id": "fb50fed9.04af",
+        "type": "function",
+        "z": "c89ae3d9.37652",
+        "name": "JSONify",
+        "func": "msg.payload = JSON.parse(msg.payload);\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 300,
+        "y": 140,
+        "wires": [
+            [
+                "7ab3a5d6.854c5c",
+                "e47fe7e7.a207f8"
+            ]
+        ]
+    },
+    {
+        "id": "f4270429.0bd8f8",
+        "type": "inject",
+        "z": "c89ae3d9.37652",
+        "name": "Bulb off",
+        "topic": "",
+        "payload": "{ \"hello\" : \"world\", \"bulb\" : 0}",
+        "payloadType": "str",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "x": 120,
+        "y": 116,
+        "wires": [
+            [
+                "fb50fed9.04af"
+            ]
+        ]
+    },
+    {
+        "id": "d7e55494.281aa8",
+        "type": "websocket out",
+        "z": "c89ae3d9.37652",
+        "name": "bulb out",
+        "server": "9277dd35.6d882",
+        "client": "",
+        "x": 900,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "7ab3a5d6.854c5c",
+        "type": "debug",
+        "z": "c89ae3d9.37652",
+        "name": "",
+        "active": true,
+        "console": "false",
+        "complete": "payload",
+        "x": 557,
+        "y": 128,
+        "wires": []
+    },
+    {
+        "id": "d335e18e.2cca2",
+        "type": "inject",
+        "z": "c89ae3d9.37652",
+        "name": "Bulb unknown",
+        "topic": "",
+        "payload": "{ \"hello\" : \"world\", \"john\" : \"doe\"}",
+        "payloadType": "str",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "x": 140,
+        "y": 158,
+        "wires": [
+            [
+                "fb50fed9.04af"
+            ]
+        ]
+    },
+    {
+        "id": "6087c0ca.9f784",
+        "type": "inject",
+        "z": "c89ae3d9.37652",
+        "name": "Bulb wrong",
+        "topic": "",
+        "payload": "{ \"hello\" : \"world\", \"bulb\" : \"tango\"}",
+        "payloadType": "str",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "x": 127,
+        "y": 196,
+        "wires": [
+            [
+                "fb50fed9.04af"
+            ]
+        ]
+    },
+    {
+        "id": "d1b83c6c.70be08",
+        "type": "http in",
+        "z": "c89ae3d9.37652",
+        "name": "Status POST",
+        "url": "/statusupdate",
+        "method": "post",
+        "swaggerDoc": "",
+        "x": 102,
+        "y": 312,
+        "wires": [
+            [
+                "e47fe7e7.a207f8"
+            ]
+        ]
+    },
+    {
+        "id": "49fdd4d8.12cd24",
+        "type": "http response",
+        "z": "c89ae3d9.37652",
+        "name": "",
+        "x": 950,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "b48bb517.82da88",
+        "type": "function",
+        "z": "c89ae3d9.37652",
+        "name": "Give a reply",
+        "func": "msg.payload = {\"status\" : \"ok\" };\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 790,
+        "y": 380,
+        "wires": [
+            [
+                "49fdd4d8.12cd24"
+            ]
+        ]
+    },
+    {
+        "id": "e47fe7e7.a207f8",
+        "type": "objectcleaner",
+        "z": "c89ae3d9.37652",
+        "name": "",
+        "template": "{ \"bulb\" : 0 }\n",
+        "field": "",
+        "strictclean": false,
+        "notempty": true,
+        "musthaveallproperties": "1",
+        "x": 500,
+        "y": 280,
+        "wires": [
+            [
+                "d7e55494.281aa8",
+                "b0795324.32825",
+                "a183c0b6.31148"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "2a7eadc9.46a43a",
+        "type": "comment",
+        "z": "c89ae3d9.37652",
+        "name": "Output based on POSTED JSON",
+        "info": "includes cleanup",
+        "x": 163,
+        "y": 275,
+        "wires": []
+    },
+    {
+        "id": "acd2d15c.13181",
+        "type": "debug",
+        "z": "c89ae3d9.37652",
+        "name": "",
+        "active": true,
+        "console": "false",
+        "complete": "true",
+        "x": 890,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "b2cbd11d.466a48",
+        "type": "comment",
+        "z": "c89ae3d9.37652",
+        "name": "Manually testing output",
+        "info": "Triggers for the different statuses\n\n- unknown\n- on\n- off\n- \nincludes invalid data",
+        "x": 141,
+        "y": 37,
+        "wires": []
+    },
+    {
+        "id": "274a32a7.8a8526",
+        "type": "http request",
+        "z": "c89ae3d9.37652",
+        "name": "LED switch",
+        "method": "POST",
+        "ret": "obj",
+        "url": "https://api.particle.io/v1/devices/310031000547343232363230/led?access_token=ef1d0fb4e60957b794d4ddcacccf866a6d39bb6a",
+        "x": 910,
+        "y": 220,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "9a7cd0d0.2d8368",
+        "type": "debug",
+        "z": "c89ae3d9.37652",
+        "name": "",
+        "active": true,
+        "console": "false",
+        "complete": "false",
+        "x": 910,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "a183c0b6.31148",
+        "type": "function",
+        "z": "c89ae3d9.37652",
+        "name": "Bulb to arg",
+        "func": "var bulb = msg.payload.bulb;\nmsg.payload = {};\nif (bulb === 1 || bulb === \"1\") {\n    msg.payload.args = \"on\";\n} else {\n   msg.payload.args = \"off\"; \n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 730,
+        "y": 260,
+        "wires": [
+            [
+                "274a32a7.8a8526",
+                "9a7cd0d0.2d8368"
+            ]
+        ]
+    },
+    {
+        "id": "b741b386.22dd6",
+        "type": "subflow:1abfffc1.49fdc",
+        "z": "c89ae3d9.37652",
+        "x": 150,
+        "y": 240,
+        "wires": [
+            [
+                "e9a6ff32.1a876"
+            ]
+        ]
+    },
+    {
+        "id": "5737c9dc.ef4ed8",
+        "type": "http in",
+        "z": "c89ae3d9.37652",
+        "name": "Switch bulb on",
+        "url": "/bulbon",
+        "method": "get",
+        "swaggerDoc": "",
+        "x": 109.5,
+        "y": 404,
+        "wires": [
+            [
+                "26d0d5f8.eac4aa"
+            ]
+        ]
+    },
+    {
+        "id": "8d9d3b8.cdf89c8",
+        "type": "http in",
+        "z": "c89ae3d9.37652",
+        "name": "Switch bulb off",
+        "url": "/bulboff",
+        "method": "get",
+        "swaggerDoc": "",
+        "x": 110.5,
+        "y": 441,
+        "wires": [
+            [
+                "7721a9a2.890c28"
+            ]
+        ]
+    },
+    {
+        "id": "26d0d5f8.eac4aa",
+        "type": "template",
+        "z": "c89ae3d9.37652",
+        "name": "BulbOnJson",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "{ \"bulb\" : 1 }",
+        "x": 285.5,
+        "y": 402,
+        "wires": [
+            [
+                "e47fe7e7.a207f8"
+            ]
+        ]
+    },
+    {
+        "id": "7721a9a2.890c28",
+        "type": "template",
+        "z": "c89ae3d9.37652",
+        "name": "BulbOffJson",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "{ \"bulb\" : 0 }",
+        "x": 286.5,
+        "y": 439,
+        "wires": [
+            [
+                "e47fe7e7.a207f8"
+            ]
+        ]
+    },
+    {
+        "id": "3918e1c1.161e6e",
+        "type": "comment",
+        "z": "c89ae3d9.37652",
+        "name": "Output based on GET",
+        "info": "",
+        "x": 129.5,
+        "y": 364,
+        "wires": []
+    },
+    {
+        "id": "b0795324.32825",
+        "type": "function",
+        "z": "c89ae3d9.37652",
+        "name": "Save bulb state",
+        "func": "var bulb = msg.payload.bulb;\ncontext.global.bulb = bulb;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 700,
+        "y": 300,
+        "wires": [
+            [
+                "b48bb517.82da88",
+                "acd2d15c.13181"
+            ]
+        ]
+    },
+    {
+        "id": "e9a6ff32.1a876",
+        "type": "function",
+        "z": "c89ae3d9.37652",
+        "name": "get global state",
+        "func": "if (context.global.bulb) {\n    var bulb = context.global.bulb;\n    msg.payload = { bulb : bulb };\n} else {\n    msg.payload = { bulb : 0};\n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 380,
+        "y": 220,
+        "wires": [
+            [
+                "acd2d15c.13181",
+                "78f2d9a.6135828"
+            ]
+        ]
+    },
+    {
+        "id": "78f2d9a.6135828",
+        "type": "delay",
+        "z": "c89ae3d9.37652",
+        "name": "Let the page load",
+        "pauseType": "delay",
+        "timeout": "2",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "x": 630,
+        "y": 180,
+        "wires": [
+            [
+                "d7e55494.281aa8"
+            ]
+        ]
+    },
+    {
+        "id": "9277dd35.6d882",
+        "type": "websocket-listener",
+        "path": "/ws/bulb",
+        "wholemsg": "false"
+    }
+]
