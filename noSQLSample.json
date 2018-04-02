@@ -1,0 +1,59 @@
+[
+    {
+        "id": "ef85b987.662ef8",
+        "type": "tab",
+        "label": "NoSQLSample"
+    },
+    {
+        "id": "bffedd5e.4bbf58",
+        "type": "debug",
+        "z": "ef85b987.662ef8",
+        "name": "What's up",
+        "active": false,
+        "console": "false",
+        "complete": "payload",
+        "x": 436,
+        "y": 79,
+        "wires": []
+    },
+    {
+        "id": "93bc19c8.a076d",
+        "type": "http in",
+        "z": "ef85b987.662ef8",
+        "name": "Incoming",
+        "url": "/api/new",
+        "method": "post",
+        "x": 80,
+        "y": 97,
+        "wires": [
+            [
+                "a418005c.b8b908",
+                "bffedd5e.4bbf58",
+                "8db1301.b260b5"
+            ]
+        ]
+    },
+    {
+        "id": "a418005c.b8b908",
+        "type": "http response",
+        "z": "ef85b987.662ef8",
+        "name": "",
+        "x": 424,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "8db1301.b260b5",
+        "type": "cloudant out",
+        "z": "ef85b987.662ef8",
+        "name": "AngelDB",
+        "cloudant": "",
+        "database": "angelhack",
+        "service": "things-cloudantNoSQLDB",
+        "payonly": true,
+        "operation": "insert",
+        "x": 294,
+        "y": 278,
+        "wires": []
+    }
+]
