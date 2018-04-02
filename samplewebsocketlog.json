@@ -1,0 +1,147 @@
+[
+    {
+        "id": "269328fa.88c7a8",
+        "type": "tab",
+        "label": "RemoteLogDemo",
+        "disabled": false,
+        "info": "Captures remote logs and forwards them "
+    },
+    {
+        "id": "70a2423d.8a675c",
+        "type": "websocket in",
+        "z": "269328fa.88c7a8",
+        "name": "",
+        "server": "97ee49ea.ed0378",
+        "client": "",
+        "x": 130,
+        "y": 140,
+        "wires": [
+            [
+                "3cfb88a0.8da858"
+            ]
+        ]
+    },
+    {
+        "id": "f84cc912.6bf208",
+        "type": "inject",
+        "z": "269328fa.88c7a8",
+        "name": "",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "x": 121,
+        "y": 87,
+        "wires": [
+            [
+                "3cfb88a0.8da858"
+            ]
+        ]
+    },
+    {
+        "id": "3cfb88a0.8da858",
+        "type": "function",
+        "z": "269328fa.88c7a8",
+        "name": "",
+        "func": "delete msg._session;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 294,
+        "y": 144,
+        "wires": [
+            [
+                "b35a7e2d.a0f89",
+                "a0532483.e9d718"
+            ]
+        ]
+    },
+    {
+        "id": "a0532483.e9d718",
+        "type": "debug",
+        "z": "269328fa.88c7a8",
+        "name": "",
+        "active": true,
+        "console": "false",
+        "complete": "false",
+        "x": 516,
+        "y": 92,
+        "wires": []
+    },
+    {
+        "id": "b35a7e2d.a0f89",
+        "type": "websocket out",
+        "z": "269328fa.88c7a8",
+        "name": "",
+        "server": "97ee49ea.ed0378",
+        "client": "",
+        "x": 499,
+        "y": 146,
+        "wires": []
+    },
+    {
+        "id": "51ab00c3.fc67a",
+        "type": "template",
+        "z": "269328fa.88c7a8",
+        "name": "",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "<html>\n    <head>\n        <title>\n            Web socket log listener\n        </title>\n    </head>\n    <body onload=\"initSocket()\">\n        <h1>WebSocket log example</h1>\n        <ol id=\"loglist\">\n            <li>Listener started</li>\n        </ol>\n        <button onclick=\"stopReconnect()\">Stop Reconnecting</button>\n        <button onclick=\"startReconnect()\">Start Auto Reconnec</button>\n        <script type=\"text/javascript\">\n            'use strict';\n            var shallReconnect = true;\n            var wsEndPoint = 'wss://stwnodered.herokuapp.com/ws/log';\n            var connection = null;\n\n            function stopReconnect() {\n                shallReconnect = false;\n                addListItem('Auto reconnect off');\n            }\n\n            function startReconnect() {\n                shallReconnect = true;\n                addListItem('Auto reconnect on');\n            }\n\n            function initSocket() {\n                connection = new WebSocket(wsEndPoint);\n\n                connection.onopen = function(event) {\n                    addListItem('Connection opened');\n\n                };\n\n                connection.onmessage = function(event) {\n                    var message = event.data;\n                    addListItem(message);\n                }\n\n                connection.onclose = function(event) {\n                    addListItem('Connection closed');\n                    if (shallReconnect) {\n                        addListItem('Attemting reconnect');\n                        initSocket();\n                    }\n                }\n            }\n\n            function addListItem(itemText) {\n                var listElement = document.getElementById('loglist');\n                var node = document.createElement('li');\n                var txt = document.createTextNode(itemText);\n                node.appendChild(txt);\n                listElement.appendChild(node);\n            }\n        </script>\n    </body>\n</html>",
+        "output": "str",
+        "x": 310,
+        "y": 300,
+        "wires": [
+            [
+                "2f9834f8.0ef4bc"
+            ]
+        ]
+    },
+    {
+        "id": "2f9834f8.0ef4bc",
+        "type": "http response",
+        "z": "269328fa.88c7a8",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 530,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "5706d6f1.326338",
+        "type": "http in",
+        "z": "269328fa.88c7a8",
+        "name": "",
+        "url": "/logsample",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 140,
+        "y": 300,
+        "wires": [
+            [
+                "51ab00c3.fc67a"
+            ]
+        ]
+    },
+    {
+        "id": "ae7cad5f.b6b7b",
+        "type": "comment",
+        "z": "269328fa.88c7a8",
+        "name": "Sample Web page",
+        "info": "",
+        "x": 150,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "97ee49ea.ed0378",
+        "type": "websocket-listener",
+        "z": "",
+        "path": "/ws/log",
+        "wholemsg": "false"
+    }
+]
