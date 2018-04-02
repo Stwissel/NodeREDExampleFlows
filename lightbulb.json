@@ -312,8 +312,8 @@
         "repeat": "",
         "crontab": "",
         "once": false,
-        "x": 120,
-        "y": 76,
+        "x": 110,
+        "y": 160,
         "wires": [
             [
                 "fb50fed9.04af"
@@ -328,11 +328,10 @@
         "func": "msg.payload = JSON.parse(msg.payload);\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 300,
-        "y": 140,
+        "x": 320,
+        "y": 220,
         "wires": [
             [
-                "7ab3a5d6.854c5c",
                 "e47fe7e7.a207f8"
             ]
         ]
@@ -348,8 +347,8 @@
         "repeat": "",
         "crontab": "",
         "once": false,
-        "x": 120,
-        "y": 116,
+        "x": 110,
+        "y": 200,
         "wires": [
             [
                 "fb50fed9.04af"
@@ -363,20 +362,8 @@
         "name": "bulb out",
         "server": "9277dd35.6d882",
         "client": "",
-        "x": 900,
+        "x": 920,
         "y": 160,
-        "wires": []
-    },
-    {
-        "id": "7ab3a5d6.854c5c",
-        "type": "debug",
-        "z": "c89ae3d9.37652",
-        "name": "",
-        "active": true,
-        "console": "false",
-        "complete": "payload",
-        "x": 557,
-        "y": 128,
         "wires": []
     },
     {
@@ -390,8 +377,8 @@
         "repeat": "",
         "crontab": "",
         "once": false,
-        "x": 140,
-        "y": 158,
+        "x": 130,
+        "y": 240,
         "wires": [
             [
                 "fb50fed9.04af"
@@ -409,8 +396,8 @@
         "repeat": "",
         "crontab": "",
         "once": false,
-        "x": 127,
-        "y": 196,
+        "x": 130,
+        "y": 280,
         "wires": [
             [
                 "fb50fed9.04af"
@@ -425,8 +412,8 @@
         "url": "/statusupdate",
         "method": "post",
         "swaggerDoc": "",
-        "x": 102,
-        "y": 312,
+        "x": 130,
+        "y": 360,
         "wires": [
             [
                 "e47fe7e7.a207f8"
@@ -438,8 +425,8 @@
         "type": "http response",
         "z": "c89ae3d9.37652",
         "name": "",
-        "x": 950,
-        "y": 380,
+        "x": 930,
+        "y": 420,
         "wires": []
     },
     {
@@ -450,8 +437,8 @@
         "func": "msg.payload = {\"status\" : \"ok\" };\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 790,
-        "y": 380,
+        "x": 730,
+        "y": 420,
         "wires": [
             [
                 "49fdd4d8.12cd24"
@@ -469,7 +456,7 @@
         "notempty": true,
         "musthaveallproperties": "1",
         "x": 500,
-        "y": 280,
+        "y": 337,
         "wires": [
             [
                 "d7e55494.281aa8",
@@ -485,8 +472,8 @@
         "z": "c89ae3d9.37652",
         "name": "Output based on POSTED JSON",
         "info": "includes cleanup",
-        "x": 163,
-        "y": 275,
+        "x": 190,
+        "y": 320,
         "wires": []
     },
     {
@@ -494,10 +481,10 @@
         "type": "debug",
         "z": "c89ae3d9.37652",
         "name": "",
-        "active": true,
+        "active": false,
         "console": "false",
         "complete": "true",
-        "x": 890,
+        "x": 930,
         "y": 340,
         "wires": []
     },
@@ -530,11 +517,11 @@
         "type": "debug",
         "z": "c89ae3d9.37652",
         "name": "",
-        "active": true,
+        "active": false,
         "console": "false",
         "complete": "false",
         "x": 910,
-        "y": 300,
+        "y": 280,
         "wires": []
     },
     {
@@ -558,8 +545,8 @@
         "id": "b741b386.22dd6",
         "type": "subflow:1abfffc1.49fdc",
         "z": "c89ae3d9.37652",
-        "x": 150,
-        "y": 240,
+        "x": 170,
+        "y": 120,
         "wires": [
             [
                 "e9a6ff32.1a876"
@@ -574,8 +561,8 @@
         "url": "/bulbon",
         "method": "get",
         "swaggerDoc": "",
-        "x": 109.5,
-        "y": 404,
+        "x": 140,
+        "y": 440,
         "wires": [
             [
                 "26d0d5f8.eac4aa"
@@ -590,8 +577,8 @@
         "url": "/bulboff",
         "method": "get",
         "swaggerDoc": "",
-        "x": 110.5,
-        "y": 441,
+        "x": 140,
+        "y": 480,
         "wires": [
             [
                 "7721a9a2.890c28"
@@ -608,8 +595,8 @@
         "format": "handlebars",
         "syntax": "mustache",
         "template": "{ \"bulb\" : 1 }",
-        "x": 285.5,
-        "y": 402,
+        "x": 310,
+        "y": 440,
         "wires": [
             [
                 "e47fe7e7.a207f8"
@@ -626,8 +613,8 @@
         "format": "handlebars",
         "syntax": "mustache",
         "template": "{ \"bulb\" : 0 }",
-        "x": 286.5,
-        "y": 439,
+        "x": 310,
+        "y": 480,
         "wires": [
             [
                 "e47fe7e7.a207f8"
@@ -640,8 +627,8 @@
         "z": "c89ae3d9.37652",
         "name": "Output based on GET",
         "info": "",
-        "x": 129.5,
-        "y": 364,
+        "x": 160,
+        "y": 400,
         "wires": []
     },
     {
@@ -653,7 +640,7 @@
         "outputs": 1,
         "noerr": 0,
         "x": 700,
-        "y": 300,
+        "y": 360,
         "wires": [
             [
                 "b48bb517.82da88",
@@ -669,11 +656,10 @@
         "func": "if (context.global.bulb) {\n    var bulb = context.global.bulb;\n    msg.payload = { bulb : bulb };\n} else {\n    msg.payload = { bulb : 0};\n}\n\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 380,
-        "y": 220,
+        "x": 420,
+        "y": 120,
         "wires": [
             [
-                "acd2d15c.13181",
                 "78f2d9a.6135828"
             ]
         ]
@@ -694,10 +680,29 @@
         "randomUnits": "seconds",
         "drop": false,
         "x": 630,
-        "y": 180,
+        "y": 120,
         "wires": [
             [
                 "d7e55494.281aa8"
+            ]
+        ]
+    },
+    {
+        "id": "18e41aa5.d7fc25",
+        "type": "inject",
+        "z": "c89ae3d9.37652",
+        "name": "10 minutes off",
+        "topic": "",
+        "payload": "off",
+        "payloadType": "str",
+        "repeat": "600",
+        "crontab": "",
+        "once": false,
+        "x": 143,
+        "y": 552,
+        "wires": [
+            [
+                "7721a9a2.890c28"
             ]
         ]
     },
