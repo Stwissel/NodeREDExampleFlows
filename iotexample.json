@@ -1,0 +1,170 @@
+[
+    {
+        "id": "dffc5647.d6572",
+        "type": "tab",
+        "label": "IoT Sample"
+    },
+    {
+        "id": "3e77d543.c1882a",
+        "type": "ibmiot in",
+        "z": "dffc5647.d6572",
+        "authentication": "quickstart",
+        "apiKey": "",
+        "inputType": "evt",
+        "deviceId": "91585f9285f0",
+        "applicationId": "",
+        "deviceType": "+",
+        "eventType": "+",
+        "commandType": "",
+        "format": "json",
+        "name": "IBM IoT App In",
+        "service": "quickstart",
+        "allDevices": false,
+        "allApplications": false,
+        "allDeviceTypes": true,
+        "allEvents": true,
+        "allCommands": false,
+        "allFormats": false,
+        "x": 92,
+        "y": 120,
+        "wires": [
+            [
+                "ae0082ac.51ff8",
+                "c0c482df.3f3b8",
+                "7d0a263a.322b1"
+            ]
+        ]
+    },
+    {
+        "id": "ae0082ac.51ff8",
+        "type": "function",
+        "z": "dffc5647.d6572",
+        "name": "temp",
+        "func": "return {payload:msg.payload.d.temp};",
+        "outputs": 1,
+        "x": 295.5,
+        "y": 120,
+        "wires": [
+            [
+                "ff6ad0d9.00953"
+            ]
+        ]
+    },
+    {
+        "id": "ff6ad0d9.00953",
+        "type": "switch",
+        "z": "dffc5647.d6572",
+        "name": "temp thresh",
+        "property": "payload",
+        "rules": [
+            {
+                "t": "lte",
+                "v": "40"
+            },
+            {
+                "t": "gt",
+                "v": "40"
+            },
+            {
+                "t": "eq",
+                "v": "42"
+            }
+        ],
+        "checkall": "true",
+        "outputs": 3,
+        "x": 450.5,
+        "y": 120,
+        "wires": [
+            [
+                "80621eff.7f9de"
+            ],
+            [
+                "8e1706a.f71e8f8"
+            ],
+            [
+                "3f911a40.6ce90e"
+            ]
+        ]
+    },
+    {
+        "id": "5dad02b7.a252fc",
+        "type": "debug",
+        "z": "dffc5647.d6572",
+        "name": "cpu status",
+        "active": true,
+        "complete": "false",
+        "x": 773.5,
+        "y": 114,
+        "wires": []
+    },
+    {
+        "id": "c0c482df.3f3b8",
+        "type": "debug",
+        "z": "dffc5647.d6572",
+        "name": "device data",
+        "active": false,
+        "console": "false",
+        "complete": "true",
+        "x": 282.5,
+        "y": 76,
+        "wires": []
+    },
+    {
+        "id": "80621eff.7f9de",
+        "type": "template",
+        "z": "dffc5647.d6572",
+        "name": "safe",
+        "template": "Temperature ({{payload}}) within safe limits",
+        "x": 597.5,
+        "y": 60,
+        "wires": [
+            [
+                "5dad02b7.a252fc"
+            ]
+        ]
+    },
+    {
+        "id": "8e1706a.f71e8f8",
+        "type": "template",
+        "z": "dffc5647.d6572",
+        "name": "danger",
+        "template": "Temperature ({{payload}}) critical",
+        "x": 595.5,
+        "y": 115,
+        "wires": [
+            [
+                "5dad02b7.a252fc"
+            ]
+        ]
+    },
+    {
+        "id": "3f911a40.6ce90e",
+        "type": "template",
+        "z": "dffc5647.d6572",
+        "name": "Universe",
+        "field": "payload",
+        "format": "handlebars",
+        "template": "Found all answers",
+        "x": 598,
+        "y": 180,
+        "wires": [
+            [
+                "5dad02b7.a252fc"
+            ]
+        ]
+    },
+    {
+        "id": "7d0a263a.322b1",
+        "type": "cloudant out",
+        "z": "dffc5647.d6572",
+        "name": "",
+        "cloudant": "",
+        "database": "smartnationdata",
+        "service": "things-cloudantNoSQLDB",
+        "payonly": true,
+        "operation": "insert",
+        "x": 293,
+        "y": 260,
+        "wires": []
+    }
+]
